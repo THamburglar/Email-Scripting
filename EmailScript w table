@@ -1,0 +1,95 @@
+import os
+import subprocess
+import pandas as pd
+import win32com.client as win32
+import urllib.parse
+import time
+import random
+
+# Get the directory path of the script
+script_dir = os.path.dirname(os.path.realpath(__file__))
+
+# Load Excel file
+excel_file = "emailTestData.xlsx"
+
+# Full path to the Excel file
+excel_path = os.path.join(script_dir, excel_file)
+
+# Load Excel file
+df = pd.read_excel(excel_path)
+
+# Subject line
+subject_line = "subject line"
+
+# Concatenate columns B, C, D, to create a new column 'Data_Group'
+# df['Data_Group'] = df['IDM Application Name'].astype(str) + '-' + df['config ID'].astype(str) + '-' + df['SN Name'].astype(str)
+
+# Group emails and iterate
+for email, group_data in df.groupby('Application Owner'): #'IDM Application Name', 'config ID', 'SN Name']
+
+    # Iterate through each row in the DataFrame
+    # for index, row in df.iterrows():
+    # Extract email, B, C, and D values from the column
+    # email = row['Application Owner']
+    # data_group = f"{row['IDM Application Name']} - {row['config ID']} - {row['SN Name']}"
+    
+    # Encode the URL
+    encoded_url = urllib.parse.quote("xxx.xxx.com")
+    
+    # Create a variable to store unique combinations
+    ## data_group = "IDM Application Name - Config ID - SN Name<br>"
+    data_group = """<style>table{border-collapse:collapse;}th,td{border:2px solid;padding:8px;text-align:left;}</style><table><thead>
+    <tr>
+      <th scope="col">IDM Application Name</th>
+      <th scope="col">Config ID</th>
+      <th scope="col">SN Name</th>
+    </tr>
+  </thead>
+  <tbody>"""
+    
+    # Append data to the variable for each unique combination of columns B,C,D associated with each email
+    for index, row in group_data[['IDM Application Name', 'config ID', 'SN Name']].drop_duplicates().iterrows():
+        ## data_group += f"{row['IDM Application Name']} - {row['config ID']} - {row['SN Name']}<br>"
+        data_group += f"""
+                    <tr>
+                       <th scope="row">{row['IDM Application Name']}</th>
+                       <td>{row['config ID']}</td>
+                       <td>{row['SN Name']}</td>
+                    </tr>
+                    """
+    
+    data_group += f"""</tbody></table>"""
+    # Compose the email body
+    body = f"""Hello,<br><br>As we are past please 
+        reply back with any details you have and we will review and update our file.<br><br>The application(s) you show as 
+        the owner for:<br><br>{data_group}<br>Please use the following link to see 
+        <br><br><a href='{encoded_url}'>XXXX</a><br><br>XXXXXXXXXXXXXXXXXXXXX<br><br>
+        If you have any questions 
+        please reach out to <a href='mailto:XXX@X.com'>XXX@X.com</a><br><br>
+        Thank you,<br><br>XXX<br><br> XXX"""
+    
+    # Initialize Outlook
+    outlook = win32.Dispatch('outlook.application')
+    
+    # Create new mail item
+    mail = outlook.CreateItem(0)
+    
+    # Add email to "To:" field
+    mail.To = email
+    
+    # Add subject line
+    mail.Subject = subject_line
+    
+    # Set HTML Mail Body Format
+    mail.HTMLBody = body
+    
+    # Send the email
+    mail.Send()
+    
+
+    
+    # Generate a random delay between 2 and 5 seconds
+    delay = random.uniform(2, 5)
+    time.sleep(delay)
+    
+print("Emails sent successfully!")
