@@ -1,5 +1,8 @@
 import pandas as pd
 import win32com.client as win32
+import urllib.parse
+import time
+import random
 
 # Load Excel file
 excel_file = "your_excel_file.xlsx"
@@ -7,7 +10,6 @@ df = pd.read_excel(excel_file)
 
 # Initialize Outlook
 outlook = win32.Dispatch('outlook.application')
-mail = outlook.CreateItem(0)
 
 # Iterate through each row in the DataFrame
 for index, row in df.iterrows():
@@ -15,14 +17,24 @@ for index, row in df.iterrows():
     email = row['Email']
     data_group = f"{row['B']} - {row['C']} - {row['D']}"
     
+    # Encode the URL
+    encoded_url = urllib.parse.quote("https://example.com")  # Replace "https://example.com" with your actual URL
+    
+    # Create a new mail item
+    mail = outlook.CreateItem(0)
+    
     # Add email to "To:" field
     mail.To = email
     
-    # Compose the email body
-    body = f"Hello,\n\nHere are the unique data groups:\n\n{data_group}\n\nRegards,\n[Your Name]"
-    mail.Body = body
+    # Compose the email body with HTML formatting
+    body = f"Hello,<br><br>Here are the unique data groups:<br><br>{data_group}<br><br>Click <a href=\"{encoded_url}\">here</a> to visit the website.<br><br>Regards,<br>[Your Name]"
+    mail.HTMLBody = body
     
     # Send the email
     mail.Send()
+    
+    # Generate a random delay between 2 and 5 seconds
+    delay = random.uniform(2, 5)
+    time.sleep(delay)
 
 print("Emails sent successfully!")
