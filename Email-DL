@@ -1,11 +1,21 @@
+import os
+import subprocess
 import pandas as pd
 import win32com.client as win32
 import urllib.parse
 import time
 import random
 
+# Get the directory path of the script
+script_dir = os.path.dirname(os.path.realpath(__file__))
+
 # Load Excel file
 excel_file = "your_excel_file.xlsx"
+
+# Full path to the Excel file
+excel_path = os.path.join(script_dir, excel_file)
+
+# Load Excel file
 df = pd.read_excel(excel_file)
 
 # Initialize Outlook
