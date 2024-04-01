@@ -1,0 +1,28 @@
+import pandas as pd
+import win32com.client as win32
+
+# Load Excel file
+excel_file = "your_excel_file.xlsx"
+df = pd.read_excel(excel_file)
+
+# Initialize Outlook
+outlook = win32.Dispatch('outlook.application')
+mail = outlook.CreateItem(0)
+
+# Iterate through each row in the DataFrame
+for index, row in df.iterrows():
+    # Extract email, B, C, and D values from the row
+    email = row['Email']
+    data_group = f"{row['B']} - {row['C']} - {row['D']}"
+    
+    # Add email to "To:" field
+    mail.To = email
+    
+    # Compose the email body
+    body = f"Hello,\n\nHere are the unique data groups:\n\n{data_group}\n\nRegards,\n[Your Name]"
+    mail.Body = body
+    
+    # Send the email
+    mail.Send()
+
+print("Emails sent successfully!")
