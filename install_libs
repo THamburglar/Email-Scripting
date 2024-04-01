@@ -3,8 +3,20 @@ import subprocess
 # List of required libraries
 required_libraries = ["pandas", "pywin32"]
 
+# Optional library
+optional_libraries = ["openpyxl"]
+
 # Iterate through each library and install it
 for library in required_libraries:
+    try:
+        # Use subprocess to run pip install command
+        subprocess.check_call(["pip", "install", library])
+        print(f"Successfully installed {library}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing {library}: {e}")
+
+# Install optional libraries
+for library in optional_libraries:
     try:
         # Use subprocess to run pip install command
         subprocess.check_call(["pip", "install", library])
