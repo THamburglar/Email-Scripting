@@ -1,0 +1,13 @@
+import subprocess
+
+# List of required libraries
+required_libraries = ["pandas", "pywin32"]
+
+# Iterate through each library and install it
+for library in required_libraries:
+    try:
+        # Use subprocess to run pip install command
+        subprocess.check_call(["pip", "install", library])
+        print(f"Successfully installed {library}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing {library}: {e}")
